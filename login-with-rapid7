@@ -1,5 +1,9 @@
 #!/bin/bash
-set -u
+set -eu
+if [[ -n "${DEBUG:-}" ]]; then
+    aws --version
+    set -x
+fi
 aws_user=security-rapid7
 aws configure set aws_access_key_id $GH_AWS_ACCESS_KEY_ID --profile "$aws_user"
 aws configure set aws_secret_access_key $GH_AWS_SECRET_ACCESS_KEY --profile "$aws_user"
