@@ -5,17 +5,17 @@ if [[ -n "${DEBUG:-}" ]]; then
     set -x
 fi
 aws_user=security-rapid7
-aws configure set aws_access_key_id $GH_AWS_ACCESS_KEY_ID --profile "$aws_user"
-aws configure set aws_secret_access_key $GH_AWS_SECRET_ACCESS_KEY --profile "$aws_user"
-STS=$(aws sts get-session-token --region "eu-west-2" --profile "$aws_user")
+export AWS_ACCESS_KEY_ID=$GH_AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY=$GH_AWS_SECRET_ACCESS_KEY
+STS=$(aws sts get-session-token --region "eu-west-2")
 
-aws configure set aws_access_key_id $(echo "$STS" | jq -r '.Credentials.AccessKeyId') --profile "$aws_user"-session
-aws configure set aws_secret_access_key $(echo "$STS" | jq -r '.Credentials.SecretAccessKey') --profile "$aws_user"-session
-aws configure set aws_session_token $(echo "$STS" | jq -r '.Credentials.SessionToken') --profile "$aws_user"-session
+export AWS_ACCESS_KEY_ID=$(echo "$STS" | jq -r '.Credentials.AccessKeyId')
+export AWS_SECRET_ACCESS_KEY=$(echo "$STS" | jq -r '.Credentials.SecretAccessKey')
+export AWS_SESSION_TOKEN=$(echo "$STS" | jq -r '.Credentials.SessionToken')
 
-aws sts assume-role --role-arn "arn:aws:iam::720541322708:role/eks-$aws_user" --role-session-name="$aws_user-$(date +%m%d%Y)" --profile "$aws_user"-session --debug
+aws sts assume-role --role-arn "arn:aws:iam::720541322708:role/eks-$aws_user" --role-session-name="$aws_user-$(date +%m%d%Y)" --debug
 exit 2
-EKS=$(aws sts assume-role --role-arn "arn:aws:iam::720541322708:role/eks-$aws_user" --role-session-name="$aws_user-$(date +%m%d%Y)" --profile "$aws_user"-session)
+EKS=$(aws sts assume-role --role-arn "arn:aws:iam::720541322708:role/eks-$aws_user" --role-session-name="$aws_user-$(date +%m%d%Y)")
 
 aws configure set aws_access_key_id $(echo "$EKS" | jq -r '.Credentials.AccessKeyId') --profile "$aws_user"-session-eks
 aws configure set aws_secret_access_key $(echo "$EKS" | jq -r '.Credentials.SecretAccessKey') --profile "$aws_user"-session-eks
