@@ -23,18 +23,20 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      - uses: 1password/load-secrets-action/configure@v1
+      - uses: actions/checkout@v4
+      - uses: 1password/load-secrets-action@v2
         with:
-          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-      - uses: 1password/load-secrets-action@v1
+          export-env: true
         env:
-          GH_AWS_USERNAME: op://daniel-test/AWS Access Key security-rapid7/username
-          GH_AWS_ACCESS_KEY_ID: op://daniel-test/AWS Access Key security-rapid7/access key
-          GH_AWS_SECRET_ACCESS_KEY: op://daniel-test/AWS Access Key security-rapid7/secret access key
-          
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          GH_AWS_USERNAME: op://github-actions-secrets/AWS Access Key security-rapid7/username
+          GH_AWS_ACCESS_KEY_ID: op://github-actions-secrets/AWS Access Key security-rapid7/access key
+          GH_AWS_SECRET_ACCESS_KEY: op://github-actions-secrets/AWS Access Key security-rapid7/secret access key
+          GH_AWS_MFA_TOKEN_CODE: op://github-actions-secrets/AWS Access Key security-rapid7/mfa
+
+
       # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - name: Run login script
         # run: echo USERNAME $GH_AWS_USERNAME
         run: ./login-with-rapid7
         env:
