@@ -33,7 +33,15 @@ jobs:
           GH_AWS_ACCESS_KEY_ID: op://github-actions-secrets/AWS Access Key security-rapid7/access key
           GH_AWS_SECRET_ACCESS_KEY: op://github-actions-secrets/AWS Access Key security-rapid7/secret access key
 
-      # Runs a single command using the runners shell
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.GH_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.GH_AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+          role-to-assume: arn:aws:iam::720541322708:role/eks-security-rapid7
+          role-duration-seconds: 120
+
       - name: Run login script
         # run: echo USERNAME $GH_AWS_USERNAME
         run: ./login-with-rapid7

@@ -5,32 +5,9 @@ if [[ -n "${DEBUG:-}" ]]; then
     set -x
 fi
 
-# Prevent unintentional overrides
-unset AWS_ACCESS_KEY_ID
-unset AWS_SECRET_ACCESS_KEY
-unset AWS_SESSION_TOKEN
-
+kubectl get ns ||:
 aws_user=security-rapid7
-aws configure set aws_access_key_id "$GH_AWS_ACCESS_KEY_ID" --profile "$aws_user"
-aws configure set aws_secret_access_key "$GH_AWS_SECRET_ACCESS_KEY" --profile "$aws_user"
-
-[[ -n "${DEBUG:-}" ]] && echo "Get session token"
-STS=$(aws sts get-session-token --region "eu-west-2" --profile "$aws_user")
-
-aws configure set aws_access_key_id $(echo "$STS" | jq -r '.Credentials.AccessKeyId') --profile "$aws_user"-session
-aws configure set aws_secret_access_key $(echo "$STS" | jq -r '.Credentials.SecretAccessKey') --profile "$aws_user"-session
-aws configure set aws_session_token $(echo "$STS" | jq -r '.Credentials.SessionToken') --profile "$aws_user"-session
-
-[[ -n "${DEBUG:-}" ]] && echo "Assume role"
-aws sts assume-role --role-arn "arn:aws:iam::720541322708:role/eks-$aws_user" --role-session-name="$aws_user-$(date +%m%d%Y)" --debug --profile "$aws_user"-session
-EKS=$(aws sts assume-role --role-arn "arn:aws:iam::720541322708:role/eks-$aws_user" --role-session-name="$aws_user-$(date +%m%d%Y)" --profile "$aws_user"-session)
-
-[[ -n "${DEBUG:-}" ]] && echo "Configuring eks aws profile"
-aws configure set aws_access_key_id $(echo "$EKS" | jq -r '.Credentials.AccessKeyId') --profile "$aws_user"-session-eks
-aws configure set aws_secret_access_key $(echo "$EKS" | jq -r '.Credentials.SecretAccessKey') --profile "$aws_user"-session-eks
-aws configure set aws_session_token $(echo "$EKS" | jq -r '.Credentials.SessionToken') --profile "$aws_user"-session-eks
-
 [[ -n "${DEBUG:-}" ]] && echo "Update kubeconfig"
-aws eks update-kubeconfig --name dev-cht-eks --role-arn arn:aws:iam::720541322708:role/eks-"$aws_user" --profile "$aws_user"-session-eks --region eu-west-2
+aws eks update-kubeconfig --name dev-cht-eks --role-arn arn:aws:iam::720541322708:role/eks-"$aws_user" --region eu-west-2
 
 kubectl get ns
