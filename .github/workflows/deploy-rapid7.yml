@@ -32,8 +32,6 @@ jobs:
           GH_AWS_USERNAME: op://github-actions-secrets/AWS Access Key security-rapid7/username
           GH_AWS_ACCESS_KEY_ID: op://github-actions-secrets/AWS Access Key security-rapid7/access key
           GH_AWS_SECRET_ACCESS_KEY: op://github-actions-secrets/AWS Access Key security-rapid7/secret access key
-          GH_AWS_MFA_TOKEN_CODE: op://github-actions-secrets/AWS Access Key security-rapid7/mfa
-
 
       # Runs a single command using the runners shell
       - name: Run login script
