@@ -41,6 +41,7 @@ jobs:
           aws-region: eu-west-2
           role-to-assume: arn:aws:iam::720541322708:role/eks-security-rapid7
           role-duration-seconds: 900
+          role-skip-session-tagging: true
 
       - name: Run login script
         # run: echo USERNAME $GH_AWS_USERNAME
