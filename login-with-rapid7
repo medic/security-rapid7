@@ -8,6 +8,6 @@ fi
 kubectl get ns ||:
 aws_user=security-rapid7
 [[ -n "${DEBUG:-}" ]] && echo "Update kubeconfig"
-aws eks update-kubeconfig --name dev-cht-eks --role-arn arn:aws:iam::720541322708:role/eks-"$aws_user" --region eu-west-2
+aws eks update-kubeconfig --name dev-cht-eks --region eu-west-2
 
 kubectl get ns
